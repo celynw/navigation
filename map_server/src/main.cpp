@@ -100,18 +100,6 @@ class MapServer
           exit(-1);
         }
         try {
-          doc["occupied_thresh"] >> occ_th;
-        } catch (YAML::InvalidScalar &) {
-          ROS_ERROR("The map does not contain an occupied_thresh tag or it is invalid.");
-          exit(-1);
-        }
-        try {
-          doc["free_thresh"] >> free_th;
-        } catch (YAML::InvalidScalar &) {
-          ROS_ERROR("The map does not contain a free_thresh tag or it is invalid.");
-          exit(-1);
-        }
-        try {
           std::string modeS = "";
           doc["mode"] >> modeS;
 
@@ -129,13 +117,27 @@ class MapServer
           ROS_DEBUG("The map does not contain a mode tag or it is invalid... assuming Trinary");
           mode = TRINARY;
         }
-        try {
-          doc["origin"][0] >> origin[0];
-          doc["origin"][1] >> origin[1];
-          doc["origin"][2] >> origin[2];
-        } catch (YAML::InvalidScalar &) {
-          ROS_ERROR("The map does not contain an origin tag or it is invalid.");
-          exit(-1);
+        if (mode != RAW) {
+          try {
+            doc["occupied_thresh"] >> occ_th;
+          } catch (YAML::InvalidScalar &) {
+            ROS_ERROR("The map does not contain an occupied_thresh tag or it is invalid.");
+            exit(-1);
+          }
+          try {
+            doc["free_thresh"] >> free_th;
+          } catch (YAML::InvalidScalar &) {
+            ROS_ERROR("The map does not contain a free_thresh tag or it is invalid.");
+            exit(-1);
+          }
+          try {
+            doc["origin"][0] >> origin[0];
+            doc["origin"][1] >> origin[1];
+            doc["origin"][2] >> origin[2];
+          } catch (YAML::InvalidScalar &) {
+            ROS_ERROR("The map does not contain an origin tag or it is invalid.");
+            exit(-1);
+          }
         }
         try {
           doc["image"] >> mapfname;
@@ -260,4 +262,3 @@ int main(int argc, char **argv)
 
   return 0;
 }
-
