@@ -130,14 +130,14 @@ class MapServer
             ROS_ERROR("The map does not contain a free_thresh tag or it is invalid.");
             exit(-1);
           }
-          try {
-            doc["origin"][0] >> origin[0];
-            doc["origin"][1] >> origin[1];
-            doc["origin"][2] >> origin[2];
-          } catch (YAML::InvalidScalar &) {
-            ROS_ERROR("The map does not contain an origin tag or it is invalid.");
-            exit(-1);
-          }
+        }
+        try {
+          doc["origin"][0] >> origin[0];
+          doc["origin"][1] >> origin[1];
+          doc["origin"][2] >> origin[2];
+        } catch (YAML::InvalidScalar &) {
+          ROS_ERROR("The map does not contain an origin tag or it is invalid.");
+          exit(-1);
         }
         try {
           doc["image"] >> mapfname;
