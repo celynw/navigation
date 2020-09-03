@@ -134,6 +134,30 @@ bool Costmap2D::copyCostmapWindow(const Costmap2D& map, double win_origin_x, dou
   return true;
 }
 
+bool Costmap2D::copyCostmapWindowKeep(const Costmap2D& map, double win_origin_x, double win_origin_y, double win_size_x,
+                                  double win_size_y)
+{
+  // check for self windowing
+  if (this == &map)
+  {
+    std::cout << "Cannot convert this costmap into a window of itself" << std::endl;
+    return false;
+  }
+
+  // compute the bounds of our new map
+  unsigned int lower_left_x, lower_left_y, upper_right_x, upper_right_y;
+  if (!map.worldToMap(win_origin_x, win_origin_y, lower_left_x, lower_left_y)
+      || !map.worldToMap(win_origin_x + win_size_x, win_origin_y + win_size_y, upper_right_x, upper_right_y))
+  {
+    std::cout << "Cannot window a map that the window bounds don't fit inside of" << std::endl;
+    return false;
+  }
+
+  // copy the window of the static map and the costmap that we're taking
+  copyMapRegion(map.costmap_, lower_left_x, lower_left_y, map.size_x_, this->costmap_, win_origin_x - origin_x_, win_origin_y - origin_y_, size_x_, upper_right_x - lower_left_x, upper_right_y - lower_left_y);
+  return true;
+}
+
 Costmap2D& Costmap2D::operator=(const Costmap2D& map)
 {
   // check for self assignment
