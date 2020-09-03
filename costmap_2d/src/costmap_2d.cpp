@@ -104,7 +104,7 @@ bool Costmap2D::copyCostmapWindow(const Costmap2D& map, double win_origin_x, dou
   // check for self windowing
   if (this == &map)
   {
-    // ROS_ERROR("Cannot convert this costmap into a window of itself");
+    std::cout << "Cannot convert this costmap into a window of itself" << std::endl;
     return false;
   }
 
@@ -116,7 +116,7 @@ bool Costmap2D::copyCostmapWindow(const Costmap2D& map, double win_origin_x, dou
   if (!map.worldToMap(win_origin_x, win_origin_y, lower_left_x, lower_left_y)
       || !map.worldToMap(win_origin_x + win_size_x, win_origin_y + win_size_y, upper_right_x, upper_right_y))
   {
-    // ROS_ERROR("Cannot window a map that the window bounds don't fit inside of");
+    std::cout << "Cannot window a map that the window bounds don't fit inside of" << std::endl;
     return false;
   }
 
@@ -136,7 +136,7 @@ bool Costmap2D::copyCostmapWindow(const Costmap2D& map, double win_origin_x, dou
 
 Costmap2D& Costmap2D::operator=(const Costmap2D& map)
 {
-  // check for self assignement
+  // check for self assignment
   if (this == &map)
     return *this;
 
