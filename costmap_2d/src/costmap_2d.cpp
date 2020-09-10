@@ -84,7 +84,7 @@ void Costmap2D::resizeMap(unsigned int size_x, unsigned int size_y, double resol
   resetMaps();
 }
 
-bool Costmap2D::expandMap(double lower_x, double lower_y, double upper_x, double upper_y)
+bool Costmap2D::expandMap(double lower_x, double lower_y, double upper_x, double upper_y, unsigned char default_value)
 {
   boost::unique_lock<mutex_t> lock(*access_);
   // Check if the bounds are already inside the current map
@@ -107,7 +107,9 @@ bool Costmap2D::expandMap(double lower_x, double lower_y, double upper_x, double
   int size_x_new_ = (int)(ceil(upper_x / resolution_) - floor(lower_x / resolution_));
   int size_y_new_ = (int)(ceil(upper_y / resolution_) - floor(lower_y / resolution_));
   unsigned char* costmap_temp = new unsigned char[size_x_new_ * size_y_new_];
-  memset(costmap_temp, default_value_, size_x_new_ * size_y_new_ * sizeof(unsigned char));
+  // TODO I have no idea why 'default_value_' seems to reset back to zero
+  // memset(costmap_temp, default_value_, size_x_new_ * size_y_new_ * sizeof(unsigned char));
+  memset(costmap_temp, default_value, size_x_new_ * size_y_new_ * sizeof(unsigned char));
 
   // Copy original map data to the new map
   int origin_cell_x = (int)((origin_x_ - lower_x) / resolution_);

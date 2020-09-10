@@ -281,7 +281,7 @@ public:
   void resizeMap(unsigned int size_x, unsigned int size_y, double resolution, double origin_x,
                  double origin_y);
 
-  bool expandMap(double lower_x, double lower_y, double upper_x, double upper_y);
+  bool expandMap(double lower_x, double lower_y, double upper_x, double upper_y, unsigned char default_value);
 
   void resetMap(unsigned int x0, unsigned int y0, unsigned int xn, unsigned int yn);
 
