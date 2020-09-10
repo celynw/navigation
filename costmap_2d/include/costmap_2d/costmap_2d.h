@@ -98,17 +98,6 @@ public:
                          double win_size_y);
 
   /**
-   * @brief  Copy a window of a costmap to this without changing the dimensions
-   * @param  map The costmap to copy
-   * @param win_origin_x The x origin (lower left corner) for the window to copy, in meters
-   * @param win_origin_y The y origin (lower left corner) for the window to copy, in meters
-   * @param win_size_x The x size of the window, in meters
-   * @param win_size_y The y size of the window, in meters
-   */
-  bool copyCostmapWindowKeep(const Costmap2D& map, double win_origin_x, double win_origin_y, double win_size_x,
-                         double win_size_y);
-
-  /**
    * @brief  Default constructor
    */
   Costmap2D();
@@ -291,6 +280,8 @@ public:
 
   void resizeMap(unsigned int size_x, unsigned int size_y, double resolution, double origin_x,
                  double origin_y);
+
+  bool expandMap(double lower_x, double lower_y, double upper_x, double upper_y);
 
   void resetMap(unsigned int x0, unsigned int y0, unsigned int xn, unsigned int yn);
 

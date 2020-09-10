@@ -84,6 +84,53 @@ void Costmap2D::resizeMap(unsigned int size_x, unsigned int size_y, double resol
   resetMaps();
 }
 
+bool Costmap2D::expandMap(double lower_x, double lower_y, double upper_x, double upper_y)
+{
+  boost::unique_lock<mutex_t> lock(*access_);
+  // Check if the bounds are already inside the current map
+  if ((lower_x >= origin_x_) && (upper_x <= origin_x_ + getSizeInMetersX())
+      && (lower_y >= origin_y_) && (upper_y <= origin_y_ + getSizeInMetersY())) {
+    return false;
+  }
+
+  // Maximise bounds
+  if (lower_x >= origin_x_)
+    lower_x = origin_x_;
+  if (upper_x <= origin_x_ + getSizeInMetersX())
+    upper_x = origin_x_ + getSizeInMetersX();
+  if (lower_y >= origin_y_)
+    lower_y = origin_y_;
+  if (upper_y <= origin_y_ + getSizeInMetersY())
+    upper_y = origin_y_ + getSizeInMetersY();
+
+  // Create a new map based on those bounds
+  int size_x_new_ = (int)(ceil(upper_x / resolution_) - floor(lower_x / resolution_));
+  int size_y_new_ = (int)(ceil(upper_y / resolution_) - floor(lower_y / resolution_));
+  unsigned char* costmap_temp = new unsigned char[size_x_new_ * size_y_new_];
+  memset(costmap_temp, default_value_, size_x_new_ * size_y_new_ * sizeof(unsigned char));
+
+  // Copy original map data to the new map
+  int origin_cell_x = (int)((origin_x_ - lower_x) / resolution_);
+  int origin_cell_y = (int)((origin_y_ - lower_y) / resolution_);
+  if (lower_x < origin_x_)
+    origin_cell_x++;
+  if (lower_y < origin_y_)
+    origin_cell_y++;
+  copyMapRegion(costmap_, (unsigned int)0, (unsigned int)0, size_x_, costmap_temp, origin_cell_x, origin_cell_y, size_x_new_, size_x_, size_y_);
+
+  // Free old memory and assign new
+  delete[] costmap_;
+  costmap_ = costmap_temp;
+
+  // Set new attributes
+  size_x_ = size_x_new_;
+  size_y_ = size_y_new_;
+  origin_x_ = floor(lower_x / resolution_) * resolution_;
+  origin_y_ = floor(lower_y / resolution_) * resolution_;
+
+  return true;
+}
+
 void Costmap2D::resetMaps()
 {
   boost::unique_lock<mutex_t> lock(*access_);
@@ -131,30 +178,6 @@ bool Costmap2D::copyCostmapWindow(const Costmap2D& map, double win_origin_x, dou
 
   // copy the window of the static map and the costmap that we're taking
   copyMapRegion(map.costmap_, lower_left_x, lower_left_y, map.size_x_, costmap_, 0, 0, size_x_, size_x_, size_y_);
-  return true;
-}
-
-bool Costmap2D::copyCostmapWindowKeep(const Costmap2D& map, double win_origin_x, double win_origin_y, double win_size_x,
-                                  double win_size_y)
-{
-  // check for self windowing
-  if (this == &map)
-  {
-    std::cout << "Cannot convert this costmap into a window of itself" << std::endl;
-    return false;
-  }
-
-  // compute the bounds of our new map
-  unsigned int lower_left_x, lower_left_y, upper_right_x, upper_right_y;
-  if (!map.worldToMap(win_origin_x, win_origin_y, lower_left_x, lower_left_y)
-      || !map.worldToMap(win_origin_x + win_size_x, win_origin_y + win_size_y, upper_right_x, upper_right_y))
-  {
-    std::cout << "Cannot window a map that the window bounds don't fit inside of" << std::endl;
-    return false;
-  }
-
-  // copy the window of the static map and the costmap that we're taking
-  copyMapRegion(map.costmap_, lower_left_x, lower_left_y, map.size_x_, this->costmap_, win_origin_x - origin_x_, win_origin_y - origin_y_, size_x_, upper_right_x - lower_left_x, upper_right_y - lower_left_y);
   return true;
 }
 
