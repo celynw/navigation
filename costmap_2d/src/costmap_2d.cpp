@@ -488,12 +488,14 @@ double Costmap2D::getSizeInMetersX() const
 {
   if (size_x_ == 0)
     return 0.0;
+  return size_x_ * resolution_;
 }
 
 double Costmap2D::getSizeInMetersY() const
 {
   if (size_y_ == 0)
     return 0.0;
+  return size_y_ * resolution_;
 }
 
 double Costmap2D::getOriginX() const
