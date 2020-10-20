@@ -92,11 +92,17 @@ class MapServer
         } catch (YAML::InvalidScalar &) {
           ROS_ERROR("The map does not contain a resolution tag or it is invalid.");
           exit(-1);
+        } catch (std::exception const &ex) {
+          ROS_ERROR_STREAM("YAML error:" << ex.what());
+          exit(-1);
         }
         try {
           doc["negate"] >> negate;
         } catch (YAML::InvalidScalar &) {
           ROS_ERROR("The map does not contain a negate tag or it is invalid.");
+          exit(-1);
+        } catch (std::exception const &ex) {
+          ROS_ERROR_STREAM("YAML error:" << ex.what());
           exit(-1);
         }
         try {
@@ -116,6 +122,9 @@ class MapServer
         } catch (YAML::Exception &) {
           ROS_DEBUG("The map does not contain a mode tag or it is invalid... assuming Trinary");
           mode = TRINARY;
+        } catch (std::exception const &ex) {
+          ROS_ERROR_STREAM("YAML error:" << ex.what());
+          mode = TRINARY;
         }
         if (mode != RAW) {
           try {
@@ -123,11 +132,17 @@ class MapServer
           } catch (YAML::InvalidScalar &) {
             ROS_ERROR("The map does not contain an occupied_thresh tag or it is invalid.");
             exit(-1);
+          } catch (std::exception const &ex) {
+            ROS_ERROR_STREAM("YAML error:" << ex.what());
+            exit(-1);
           }
           try {
             doc["free_thresh"] >> free_th;
           } catch (YAML::InvalidScalar &) {
             ROS_ERROR("The map does not contain a free_thresh tag or it is invalid.");
+            exit(-1);
+          } catch (std::exception const &ex) {
+            ROS_ERROR_STREAM("YAML error:" << ex.what());
             exit(-1);
           }
         }
@@ -137,6 +152,9 @@ class MapServer
           doc["origin"][2] >> origin[2];
         } catch (YAML::InvalidScalar &) {
           ROS_ERROR("The map does not contain an origin tag or it is invalid.");
+          exit(-1);
+        } catch (std::exception const &ex) {
+          ROS_ERROR_STREAM("YAML error:" << ex.what());
           exit(-1);
         }
         try {
@@ -158,6 +176,9 @@ class MapServer
           }
         } catch (YAML::InvalidScalar &) {
           ROS_ERROR("The map does not contain an image tag or it is invalid.");
+          exit(-1);
+        } catch (std::exception const &ex) {
+          ROS_ERROR_STREAM("YAML error:" << ex.what());
           exit(-1);
         }
       } else {
